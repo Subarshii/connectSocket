@@ -8,13 +8,11 @@ import java.net.Socket;
 public class MyHTTPServer {
     public static void main(String[] args) throws IOException {
         System.out.println("connection port 5000 .....");
-
         ServerSocket serve = new ServerSocket(5000);
         Socket s = serve.accept();
         PrintWriter out = new PrintWriter(s.getOutputStream());
         BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
         BufferedOutputStream or = new BufferedOutputStream(s.getOutputStream());
-
         while (true) {
             String input = br.readLine();
             File file = new File("index.html");
@@ -30,14 +28,8 @@ public class MyHTTPServer {
                 or.write(fileData, 0, fileLength);
                 or.flush();
             }
-
-
         }
-
-
     }
-
-
     private static byte[] readFileData(File file, int fileLength) throws IOException {
         byte[] fileData = new byte[fileLength];
         FileInputStream fileIn = new FileInputStream(file);

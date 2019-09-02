@@ -8,40 +8,42 @@ import java.net.Socket;
 public class MyHTTPServer {
     public static void main(String[] args) throws IOException {
         System.out.println("connection port 5000 .....");
-        ServerSocket serve = new ServerSocket(5000);
-        Socket s = serve.accept();
-        PrintWriter out = new PrintWriter(s.getOutputStream());
-        BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
-        BufferedOutputStream or = new BufferedOutputStream(s.getOutputStream());
-        while (true) {
-            String input = br.readLine();
-            System.out.println(input);
-            File file = new File("index.html");
-            int fileLength = (int) file.length();
-            if (input.contains(file.getName())) {
-                byte[] fileData = readFile(file, fileLength);
-                out.println("HTTP/1.1 200 is  OK");
-                out.println();
-                out.flush();
-                or.write(fileData, 0, fileLength);
-                or.flush();
-            }
 
+        try (ServerSocket serve = new ServerSocket(5000);
+             Socket s = serve.accept();
+             BufferedReader br = new BufferedReader(new InputStreamReader(s.getInputStream()));
+             BufferedOutputStream or = new BufferedOutputStream(s.getOutputStream());
+        ) {
+            PrintWriter out = new PrintWriter(s.getOutputStream());
+
+            while (true) {
+                String input = br.readLine();
+                System.out.println(input);
+                File file = new File("index.html");
+                int fileLength = (int) file.length();
+                if (input.contains(file.getName())) {
+                    byte[] fileData = readFile(file, fileLength);
+                    out.println("HTTP/1.1 200 is  OK");
+                    out.println();
+                    out.flush();
+                    or.write(fileData, 0, fileLength);
+                    or.flush();
+                }
+
+            }
         }
+
 
     }
 
 
     private static byte[] readFile(File file, int fileLength) throws IOException {
         byte[] fileData = new byte[fileLength];
-        try (FileInputStream fileIn = new FileInputStream(file)) {
-            int f = fileIn.read(fileData);
-            while (true) {
-                if (f == -1) {
-                    break;
-
-                }
-            }
+        FileInputStream fileIn = new FileInputStream(file);
+        int f = fileIn.read(fileData);
+        fileIn.read(fileData);
+        while (f == -1) {
+            break;
         }
         return fileData;
     }

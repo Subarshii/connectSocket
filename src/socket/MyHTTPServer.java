@@ -34,11 +34,14 @@ public class MyHTTPServer {
 
     private static byte[] readFile(File file, int fileLength) throws IOException {
         byte[] fileData = new byte[fileLength];
-        FileInputStream fileIn = new FileInputStream(file);
-        int f = fileIn.read(fileData);
+        try (FileInputStream fileIn = new FileInputStream(file)) {
+            int f = fileIn.read(fileData);
+            while (true) {
+                if (f == -1) {
+                    break;
 
-        while (f == -1) {
-            break;
+                }
+            }
         }
         return fileData;
     }

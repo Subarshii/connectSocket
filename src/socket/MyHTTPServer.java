@@ -18,7 +18,7 @@ public class MyHTTPServer {
             System.out.println(input);
             File file = new File("index.html");
             int fileLength = (int) file.length();
-            if (input.contains("GET")) {
+            if (input.contains(file.getName())) {
                 byte[] fileData = readFile(file, fileLength);
                 out.println("HTTP/1.1 200 is  OK");
                 out.println();
@@ -28,7 +28,9 @@ public class MyHTTPServer {
             }
 
         }
+
     }
+
 
     private static byte[] readFile(File file, int fileLength) throws IOException {
         byte[] fileData = new byte[fileLength];

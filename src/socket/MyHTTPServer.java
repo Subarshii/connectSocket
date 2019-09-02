@@ -15,11 +15,9 @@ public class MyHTTPServer {
         BufferedOutputStream or = new BufferedOutputStream(s.getOutputStream());
         while (true) {
             String input = br.readLine();
+            System.out.println(input);
             File file = new File("index.html");
             int fileLength = (int) file.length();
-            if (input == null) {
-                break;
-            }
             if (input.contains("GET")) {
                 byte[] fileData = readFileData(file, fileLength);
                 out.println("HTTP/1.1 200 is  OK");
@@ -28,8 +26,10 @@ public class MyHTTPServer {
                 or.write(fileData, 0, fileLength);
                 or.flush();
             }
+
         }
     }
+
     private static byte[] readFileData(File file, int fileLength) throws IOException {
         byte[] fileData = new byte[fileLength];
         FileInputStream fileIn = new FileInputStream(file);

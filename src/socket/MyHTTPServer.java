@@ -3,75 +3,82 @@ package socket;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class MyHTTPServer {
     public static void main(String[] args) throws IOException {
         System.out.println("connection port 5000 .....");
         ServerSocket serve = null;
-        PrintWriter out = null;
+        PrintWriter pw = null;
         Socket s = null;
         BufferedReader br = null;
-        BufferedOutputStream or = null;
+        BufferedOutputStream bout = null;
         try {
             serve = new ServerSocket(5000);
             s = serve.accept();
-            out = new PrintWriter(s.getOutputStream());
+            pw = new PrintWriter(s.getOutputStream());
             br = new BufferedReader(new InputStreamReader(s.getInputStream()));
-            or = new BufferedOutputStream(s.getOutputStream());
+            bout = new BufferedOutputStream(s.getOutputStream());
+
+
             String input = br.readLine();
             String[] split = input.split(" ");
-
             String filename = split[1];
-            File file = new File(".", filename);
+            Path path = Paths.get(".", filename);
 
-            int fileLength = (int) file.length();
-            if (input.contains("GET")) {
-                byte[] fileData = readFile(file, fileLength);
-                out.println("GET");
-                out.println("HTTP/1.1 200 OK");
-                out.println();
-                out.flush();
-                or.write(fileData, 0, fileLength);
-                or.flush();
+            try (InputStream inputpath = Files.newInputStream(path);
+                 BufferedInputStream bintput = new BufferedInputStream(inputpath)) {
+                if (input.contains("GET")) {
+                    readFile(pw, bout, bintput, "HTTP/1.1 200 OK");
+                }
             }
-        } catch (FileNotFoundException fn) {
-            try {
-                String notfound = "fileNotFound.html";
-                File filenotFound = new File(".", notfound);
-                int fileLength = (int) filenotFound.length();
-
-                byte[] fileData = readFile(filenotFound, fileLength);
-                out.println("GET");
-                out.println("HTTP/1.1 400 FILE NOT FOUND");
-                out.println();
-                out.flush();
-                or.write(fileData, 0, fileLength);
-                or.flush();
-            } catch (IOException ioe) {
-                System.out.println(" Error Exception " + ioe.getMessage());
+        } catch (NoSuchFileException nfe) {
+            String notfileHTML = "fileNotFound.html";
+            Path pathNotFound = Paths.get(notfileHTML);
+            try (InputStream in = Files.newInputStream(pathNotFound);
+                 BufferedInputStream bindel = new BufferedInputStream(in)) {
+                readFile(pw, bout, bindel, "HTTP/1.1 404 Page Not Found ");
             }
-
         } finally {
-            out.close();
+            bout.close();
             br.close();
-            or.close();
+            pw.close();
+            s.close();
+            serve.close();
 
         }
 
     }
 
-
-    private static byte[] readFile(File file, int fileLength) throws IOException {
-        byte[] fileData = new byte[fileLength];
-        try (InputStream fileIn = new FileInputStream(file)) {
-            int f = fileIn.read(fileData);
-            while (f == -1) {
+    private static void readFile(PrintWriter pw, BufferedOutputStream bout, BufferedInputStream bindel, String
+            println) throws IOException {
+        byte[] bytebuffer = new byte[1024];
+        while (true) {
+            int byteread = bindel.read(bytebuffer, 0, bytebuffer.length);
+            if (byteread == -1) {
                 break;
             }
-
+            pw.println(println);
+//            pw.println(getConTenType());
+            pw.println();
+            pw.flush();
+            bout.write(bytebuffer, 0, byteread);
+            bout.flush();
         }
-        return fileData;
     }
 
+    public static String getConTenType(String filetype) {
+        if (filetype.endsWith(".htm") || filetype.endsWith(".html")) {
+            return "text/html";
+        } else if (filetype.endsWith("xml")) {
+            return "application/xml";
+        } else
+            return "text/plain";
+
+    }
 
 }
+

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema attributeFormDefault="unqualified" elementFormDefault="qualified" version="1.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:element name="ArrayOfMAS_ICD10">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="MAS_ICD10">
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:element name="ICD10_CODE" type="xsd:string" />
+              <xsd:element name="ICD10_DES" type="xsd:string" />
+              <xsd:element name="ICD10_IDA" type="xsd:int" />
+              <xsd:element name="ICD10_NAME" type="xsd:string" />
+              <xsd:element name="ICD10_REMARK" type="xsd:string" />
+              <xsd:element name="ICD10_TM" type="xsd:string" />
+              <xsd:element name="ICD10_TYPE" type="xsd:int" />
+              <xsd:element name="ICD10_TYPE_NAME" type="xsd:string" />
+              <xsd:element name="REGISTER_CODE" type="xsd:string" />
+              <xsd:element name="REGISTER_TRADER_NAME" type="xsd:string" />
+            </xsd:sequence>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+</xsd:schema>
